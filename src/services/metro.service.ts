@@ -1,9 +1,8 @@
 import { Injectable, HttpService } from '@nestjs/common';
-import { Logger } from '@nestjs/common';
+import { getStationByName } from '../models/stations';
 import * as cheerio from 'cheerio';
 import * as qs from 'querystring';
 import * as moment from 'moment';
-import { STATIONS } from '../models/stations';
 
 @Injectable()
 export class MetroService {
@@ -36,8 +35,8 @@ export class MetroService {
         const info = $('li');
         resolve({
           from, to, date, iHour, fHour,
-          zones: info.eq(5).text().substring(69, 72).split(''),
-          duration: info.eq(4).text().substring(33, 36).replace(/\D/g, ''),
+          zones: info.eq(5).text().substring(69).split(''),
+          duration: info.eq(4).text().substring(33).replace(/\D/g, ''),
           journey: this.parseJourneys($)
         });
       }, err => reject(err));
@@ -47,8 +46,11 @@ export class MetroService {
   private parseJourneys($: CheerioStatic) {
     const listJourneys = [];
     $('table').each((tId, table) => {
+      const stations = $(table).prevAll('span').eq(0).text().substring(11, 90).split(' a ').map(e => e.trim());
       const journay = {
         trains: $(table).prev('h3').text().split(':')[1].split(',').map(e => e.trim()),
+        from: getStationByName(stations[0]),
+        to: getStationByName(stations[1]),
         hours: []
       };
       $(table).find('tr').each((trId, tr) => {

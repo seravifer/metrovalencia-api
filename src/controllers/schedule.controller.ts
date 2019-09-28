@@ -1,5 +1,5 @@
 import { MetroService } from './../services/metro.service';
-import { Controller, Get, Query, BadRequestException, Param } from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException, Param, NotImplementedException } from '@nestjs/common';
 import { STATIONS, stationExist } from '../models/stations';
 import { ScheduleValidator } from '../validatos/schedule.validator';
 
@@ -19,15 +19,16 @@ export class ScheduleController {
   }
 
   @Get('/stations/:id')
-  getStationNameById(@Param() params) {
-    const id = parseInt(params.id, 10);
-    if (!id) {
-      throw new BadRequestException(`Station is a number`);
-    }
+  getStationNameById(@Param('id') id) {
     if (!stationExist(id)) {
-      throw new BadRequestException(`Not found station: ${params.id}`);
+      throw new BadRequestException(`Not found station: ${id}`);
     }
     return { name: STATIONS[id], id };
+  }
+
+  @Get('/balance')
+  getBalance(@Query('cardNumber') cardNumber) {
+    return new NotImplementedException();
   }
 
 }
