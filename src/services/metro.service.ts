@@ -38,27 +38,30 @@ export class MetroService {
           from, to, date, iHour, fHour,
           zones: info.eq(5).text().substring(69, 72).split(''),
           duration: info.eq(4).text().substring(33, 36).replace(/\D/g, ''),
-          schedule: this.parseSchedule($)
+          journey: this.parseJourneys($)
         });
       }, err => reject(err));
     });
   }
 
-  stationExist(stationId: number) {
-    return STATIONS[stationId] !== undefined || STATIONS[stationId] !== null;
-  }
-
-  private parseSchedule($: CheerioStatic) {
-    const listTimes = [];
-    $('table').find('tr').each((i, el) => {
-      $(el).find('td').each((j, cell) => {
-        const text = $(cell).text();
-        if (j !== 0 && text !== '---') {
-          listTimes.push(text);
-        }
+  private parseJourneys($: CheerioStatic) {
+    const listJourneys = [];
+    $('table').each((tId, table) => {
+      const journay = {
+        trains: $(table).prev('h3').text().split(':')[1].split(',').map(e => e.trim()),
+        hours: []
+      };
+      $(table).find('tr').each((trId, tr) => {
+        $(tr).find('td').each((cellId, cell) => {
+          const hour = $(cell).text();
+          if (cellId !== 0 && hour !== '---') {
+            journay.hours.push(hour);
+          }
+        });
       });
+      listJourneys.push(journay);
     });
-    return listTimes;
+    return listJourneys;
   }
 
 }

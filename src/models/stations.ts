@@ -135,3 +135,8 @@ export const STATIONS = {
     35: 'Villanueva de Castellón',
     16: 'Xàtiva'
 };
+
+
+export function stationExist(stationId: number) {
+    return STATIONS[stationId] !== undefined || STATIONS[stationId] !== null;
+}

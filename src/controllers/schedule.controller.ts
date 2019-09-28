@@ -1,6 +1,6 @@
 import { MetroService } from './../services/metro.service';
 import { Controller, Get, Query, BadRequestException, Param } from '@nestjs/common';
-import { STATIONS } from '../models/stations';
+import { STATIONS, stationExist } from '../models/stations';
 import { ScheduleValidator } from '../validatos/schedule.validator';
 
 @Controller()
@@ -24,7 +24,7 @@ export class ScheduleController {
     if (!id) {
       throw new BadRequestException(`Station is a number`);
     }
-    if (!this.metroService.stationExist(id)) {
+    if (!stationExist(id)) {
       throw new BadRequestException(`Not found station: ${params.id}`);
     }
     return { name: STATIONS[id], id };
