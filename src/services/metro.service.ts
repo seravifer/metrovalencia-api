@@ -21,9 +21,7 @@ export class MetroService {
       fecha: date,
       hini: iHour,
       hfin: fHour,
-      calcular: 1,
-      res: 0,
-      key: 0
+      calcular: 1
     };
     return new Promise((resolve, reject) => {
       this.httpService.post<string>(
@@ -46,7 +44,7 @@ export class MetroService {
   private parseJourneys($: CheerioStatic) {
     const listJourneys = [];
     $('table').each((tId, table) => {
-      const stations = $(table).prevAll('span').eq(0).text().substring(11, 90).split(' a ').map(e => e.trim());
+      const stations = $(table).prevAll('span').eq(0).text().substring(11).split(' a ').map(e => e.trim());
       const journay = {
         trains: $(table).prev('h3').text().split(':')[1].split(',').map(e => e.trim()),
         from: getStationByName(stations[0]),
