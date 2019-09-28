@@ -11,8 +11,8 @@ export class MetroService {
   constructor(private httpService: HttpService) { }
 
   getRoute(
-    from: string,
-    to: string,
+    from: number,
+    to: number,
     date: string = moment().format('dd/MM/yyyy'),
     iHour: string = '00:00',
     fHour: string = '23:59') {
@@ -35,8 +35,9 @@ export class MetroService {
         const $ = cheerio.load(res.data);
         const info = $('li');
         resolve({
-          zones: info.eq(5).text().substring(69, 72),
-          routeTime: info.eq(4).text().substring(33, 36).replace(/\D/g, ''),
+          from, to, date, iHour, fHour,
+          zones: info.eq(5).text().substring(69, 72).split(''),
+          duration: info.eq(4).text().substring(33, 36).replace(/\D/g, ''),
           schedule: this.parseSchedule($)
         });
       }, err => reject(err));
