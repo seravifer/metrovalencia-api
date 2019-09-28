@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import * as qs from 'querystring';
 import * as moment from 'moment';
+import { STATIONS } from '../models/stations';
 
 @Injectable()
 export class MetroService {
@@ -13,14 +14,14 @@ export class MetroService {
     from: string,
     to: string,
     date: string = moment().format('dd/MM/yyyy'),
-    timeInit: string = '00:00',
-    timeEnd: string = '23:59') {
+    iHour: string = '00:00',
+    fHour: string = '23:59') {
     const data = {
       origen: from,
       destino: to,
       fecha: date,
-      hini: timeInit,
-      hfin: timeEnd,
+      hini: iHour,
+      hfin: fHour,
       calcular: 1,
       res: 0,
       key: 0
@@ -34,12 +35,16 @@ export class MetroService {
         const $ = cheerio.load(res.data);
         const info = $('li');
         resolve({
-          zones: info.eq(5).text().substring(66, 69),
-          routeTime: info.eq(4).text().substring(34, 50),
+          zones: info.eq(5).text().substring(69, 72),
+          routeTime: info.eq(4).text().substring(33, 36).replace(/\D/g, ''),
           schedule: this.parseSchedule($)
         });
       }, err => reject(err));
     });
+  }
+
+  stationExist(stationId: number) {
+    return STATIONS[stationId] !== undefined || STATIONS[stationId] !== null;
   }
 
   private parseSchedule($: CheerioStatic) {
